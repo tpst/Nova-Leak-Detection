@@ -19,8 +19,8 @@ void streamConnector::process()
         {
             qDebug() << "Opening " + address;
 
-            if(address == "0") {
-                cap->open(0);
+            if(address == "http://0.../mjpg/video.mjpg") {
+                cap->open(0); // open default webcam
             } else {
                 cap->open(address.toStdString());
             }
@@ -28,7 +28,7 @@ void streamConnector::process()
         }
 
     } catch(std::exception &e) {
-        qDebug() << "Something broke in stream connector process";
+        qDebug() << "Stream could not connect. Returned error: " << e.what();
     }
 
     emit finished();

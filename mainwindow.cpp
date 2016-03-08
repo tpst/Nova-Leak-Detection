@@ -63,6 +63,8 @@ void MainWindow::on_stopButton_clicked()
     handler->Stop();
 
     handler->quit();
+
+    this->refreshDisplays();
 }
 
 void MainWindow::on_exitButton_clicked()
@@ -114,6 +116,6 @@ void MainWindow::refreshDisplays()
     }
     ui->label->clear();
     ui->label_2->clear();
-   // ui->label->repaint();
+    //ui->label->repaint();
     //ui->label_2->repaint();
 }

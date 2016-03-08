@@ -44,7 +44,7 @@ bool captureHandler::newConnection(cv::VideoCapture &capture, QString address)
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     thread->start();
     //thread->wait();
-    thread->wait(1000); // wait some time for connection to establish.
+    thread->wait(6000); // wait some time for connection to establish.
 
     if(capture.isOpened()) {
         return true;
@@ -70,7 +70,7 @@ void captureHandler::run()
     try {
         if(!vc2.isOpened() && stream2Active) {
             // new connection thread
-            stream2Active = newConnection(vc2, "0");
+            stream2Active = newConnection(vc2, IP1);
             if(!stream2Active)
                 qDebug() << "Failed to open stream 2";
         }
