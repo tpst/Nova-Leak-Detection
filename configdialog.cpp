@@ -30,6 +30,11 @@ bool  configDialog::isButton2Checked()
     return ui->radioButton_2->isChecked();
 }
 
+bool configDialog::isButton3Checked()
+{
+    return ui->radioButton_3->isChecked();
+}
+
 // Validate config. This should also check IP address
 bool configDialog::validStream()
 {

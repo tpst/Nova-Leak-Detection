@@ -1,6 +1,7 @@
 #include "capturehandler.h"
 #include "streamconnector.h"
 #include "framegetter.h"
+#include "frameprocessor.h"
 
 // constructor
 captureHandler::captureHandler(QObject* parent) : QThread(parent)
@@ -82,6 +83,7 @@ void captureHandler::run()
 
     thread1 = new QThread;
     thread2 = new QThread;
+    thread3 = new QThread;
 
     if(stream1Active) {
 
@@ -130,7 +132,32 @@ void captureHandler::run()
 
         thread2->start();
 
+        // Enable image processing only if stream 2 is active
+        if(processActive) {
+            frameProcessor* proc = new frameProcessor();
+
+            //connect some stuff
+
+            //connect(thread3, SIGNAL(started()), proc, SLOT(process()));
+
+            connect(get2, SIGNAL(procFrame(cv::Mat)), proc, SLOT(process(cv::Mat)));
+
+            connect(proc, SIGNAL(frameReady(QImage)), this, SIGNAL(frameReady2(QImage)));
+
+            connect(proc, SIGNAL(finished()), thread3, SLOT(quit()));
+
+            connect(proc, SIGNAL(finished()), proc, SLOT(deleteLater()));
+
+            connect(get2, SIGNAL(finished()), proc, SIGNAL(finished()));
+
+            connect(thread3, SIGNAL(finished()), thread3, SLOT(deleteLater()));
+
+            proc->moveToThread(thread3);
+
+            thread3->start();
+        }
     }
+
 
     // Main process loop for capturing video
     while(!stop)
@@ -251,4 +278,8 @@ bool captureHandler::isRecording()
     return record;
 }
 
+void captureHandler::toggleRecord(bool value)
+{
+    record = value;
+}
 

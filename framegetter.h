@@ -25,6 +25,7 @@ public slots:
 signals:
     void finished();
     void frameReady(QImage frame);
+    void procFrame(cv::Mat frame);
     void refreshDisplays();
     void error(QString err);
 protected:

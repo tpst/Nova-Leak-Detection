@@ -40,6 +40,8 @@ public:
 
     void toggleProcess(bool value);
 
+    void toggleRecord(bool value);
+
     bool isProcessActive();
 
     bool isRecording();
@@ -68,8 +70,10 @@ private:
     VideoCapture vc2;
     Camera camera;
 
+    // Seperate threads for image capture and processing
     QThread* thread1;
     QThread* thread2;
+    QThread* thread3;
 
 protected:
     void run();

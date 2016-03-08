@@ -21,6 +21,8 @@ public:
 
     bool isButton2Checked();
 
+    bool isButton3Checked(); // checks if blackfly is active
+
     bool validStream();
 
     void getIPs(QString& one, QString& two);

@@ -34,7 +34,7 @@ void frameGetter::process()
                     if(!vc->read(frame)) {
                         qDebug() << "Cannot get image from stream 2";
                     } else {
-
+                        emit procFrame(frame); // process this image
                         //frame 1
                         if (frame.channels()== 3){
                             cv::cvtColor(frame, RGBframe, CV_BGR2RGB);

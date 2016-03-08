@@ -30,8 +30,8 @@ void MainWindow::on_AddStream_clicked()
     {
         cfg.getIPs(handler->IP1, handler->IP2);
 
-        handler->toggleStream1(cfg.isButton1Checked());
-        handler->toggleStream2(cfg.isButton2Checked());
+        handler->toggleStream1(cfg.isButton2Checked()); // stream 1 is blackfly, thus swap toggle
+        handler->toggleStream2(cfg.isButton1Checked()); // stream 2 is first IP
 
         this->refreshDisplays();
 
@@ -76,10 +76,13 @@ void MainWindow::on_exitButton_clicked()
 void MainWindow::on_recordStream_clicked()
 {
     if(!handler->isStopped()) {
-        if(!handler->isRecording()) {
-            ui->recordStream->setText("Stop Recording");
-        } else {
+        if(handler->isRecording())
+        {
             ui->recordStream->setText("Record");
+            handler->toggleRecord(false);
+        } else {
+            ui->recordStream->setText("Stop Recording");
+            handler->toggleRecord(true);
         }
         //handler->recordStream();
 

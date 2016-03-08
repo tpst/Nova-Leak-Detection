@@ -20,13 +20,15 @@ SOURCES += main.cpp\
     capturehandler.cpp \
     configdialog.cpp \
     streamconnector.cpp \
-    framegetter.cpp
+    framegetter.cpp \
+    frameprocessor.cpp
 
 HEADERS  += mainwindow.h \
     capturehandler.h \
     configdialog.h \
     streamconnector.h \
-    framegetter.h
+    framegetter.h \
+    frameprocessor.h
 
 FORMS    += \
     mainwindow.ui \
