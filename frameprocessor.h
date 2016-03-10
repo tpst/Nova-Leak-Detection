@@ -14,7 +14,7 @@ class frameProcessor : public QObject
 {
     Q_OBJECT
 public:
-    frameProcessor();
+    frameProcessor(bool &on);
     ~frameProcessor();
 
 public slots:
@@ -23,12 +23,12 @@ public slots:
 signals:
     void finished();
     void frameReady(QImage qFrame);
-    void refreshDisplays();
 
 private:
     //variables
     QImage qFrame;
     cv::Mat frame;
+    bool *run;
 };
 
 #endif // FRAMEPROCESSOR_H

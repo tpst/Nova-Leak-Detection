@@ -62,13 +62,10 @@ void configDialog::getIPs(QString& one, QString& two)
     one += str;
     two += str;
 
-    qDebug() << one + " " + two;
-
 }
 
 void configDialog::on_buttonBox_accepted()
 {
-    qDebug() << ui->lineEdit->text();
 }
 
 

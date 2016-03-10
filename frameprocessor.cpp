@@ -2,22 +2,27 @@
 
 using namespace cv;
 
-frameProcessor::frameProcessor()
+frameProcessor::frameProcessor(bool &on)
 {
-
+    run = &on;
 }
 
 frameProcessor::~frameProcessor()
 {
-
+    // free resources
 }
 
 void frameProcessor::process(Mat frame)
 {
     // image processing goes here
-
-    imshow("window1", frame);
-
-    //emit frameReady(qFrame);
-    //emit finished();
+    if(*run) {
+        try {
+            imshow("window1", frame);
+        } catch(std::exception &e) {
+            qDebug() << "Image processing failed";
+        }
+    } else {
+        destroyAllWindows();
+        emit finished();
+    }
 }

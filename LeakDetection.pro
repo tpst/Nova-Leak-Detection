@@ -11,8 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = LeakDetection
 TEMPLATE = app
 
-INCLUDEPATH += /usr/local/include/opencv
-LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_videoio -lopencv_imgproc
+INCLUDEPATH += /usr/local/include/
+#LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_videoio -lopencv_imgproc
+LIBS += -L~/OpenCV/opencv/release/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_videoio -lopencv_imgproc
 LIBS += -L/usr/lib -lflycapture -lflycapture-c -lflycapturegui
 
 SOURCES += main.cpp\

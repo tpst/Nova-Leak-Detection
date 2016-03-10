@@ -83,7 +83,6 @@ signals:
     void frameReady(QImage frame);
     void frameReady2(QImage frame2);
     void saveStream(cv::Mat frame);
-
     void streamOver();
     void refreshDisplays();
 

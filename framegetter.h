@@ -19,6 +19,8 @@ public:
     frameGetter(FlyCapture2::Camera &cam);
     frameGetter(cv::VideoCapture &cap);
     ~frameGetter();
+    void rotate(cv::Mat& src, double angle, cv::Mat& dst);
+
 public slots:
     void process();
     void endStream();
@@ -28,6 +30,7 @@ signals:
     void procFrame(cv::Mat frame);
     void refreshDisplays();
     void error(QString err);
+
 protected:
     void msleep(int ms);
 private:

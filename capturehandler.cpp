@@ -85,10 +85,13 @@ void captureHandler::run()
     thread2 = new QThread;
     thread3 = new QThread;
 
+    frameGetter* get1;
+    frameGetter* get2;
+
     if(stream1Active) {
 
         //thread1 = new QThread;
-        frameGetter* get1 = new frameGetter(camera);
+        get1 = new frameGetter(camera);
 
         connect(thread1, SIGNAL(started()), get1, SLOT(process()));
 
@@ -112,7 +115,7 @@ void captureHandler::run()
     if(stream2Active) {
         //thread2 = new QThread;
 
-        frameGetter* get2 = new frameGetter(vc2);
+        get2 = new frameGetter(vc2);
 
         connect(thread2, SIGNAL(started()), get2, SLOT(process()));
 
@@ -124,46 +127,49 @@ void captureHandler::run()
 
         connect(thread2, SIGNAL(finished()), thread2, SLOT(deleteLater()));
 
-        connect(this, SIGNAL(streamOver()), get2, SLOT(endStream()));
-
         connect(get2, SIGNAL(refreshDisplays()), this, SIGNAL(refreshDisplays()));
 
         get2->moveToThread(thread2);
 
         thread2->start();
 
-        // Enable image processing only if stream 2 is active
-        if(processActive) {
-            frameProcessor* proc = new frameProcessor();
-
-            //connect some stuff
-
-            //connect(thread3, SIGNAL(started()), proc, SLOT(process()));
-
-            connect(get2, SIGNAL(procFrame(cv::Mat)), proc, SLOT(process(cv::Mat)));
-
-            connect(proc, SIGNAL(frameReady(QImage)), this, SIGNAL(frameReady2(QImage)));
-
-            connect(proc, SIGNAL(finished()), thread3, SLOT(quit()));
-
-            connect(proc, SIGNAL(finished()), proc, SLOT(deleteLater()));
-
-            connect(get2, SIGNAL(finished()), proc, SIGNAL(finished()));
-
-            connect(thread3, SIGNAL(finished()), thread3, SLOT(deleteLater()));
-
-            proc->moveToThread(thread3);
-
-            thread3->start();
-        }
     }
 
-
+    bool on = false; // logic for image processing stream
+    frameProcessor* proc;
     // Main process loop for capturing video
     while(!stop)
     {
         // do some stuff i guess
+        if(processActive && stream2Active) {
+            if(!on) {
+                // processor is off - initialise new one.
+                on = true;
 
+                proc = new frameProcessor(on);
+
+                //connect(thread3, SIGNAL(started()), proc, SLOT(process()));
+
+                connect(get2, SIGNAL(procFrame(cv::Mat)), proc, SLOT(process(cv::Mat)));
+
+                connect(proc, SIGNAL(frameReady(QImage)), this, SIGNAL(frameReady2(QImage)));
+
+                connect(proc, SIGNAL(finished()), thread3, SLOT(quit()));
+
+                connect(proc, SIGNAL(finished()), proc, SLOT(deleteLater()));
+
+                connect(get2, SIGNAL(finished()), proc, SIGNAL(finished()));
+
+                connect(thread3, SIGNAL(finished()), thread3, SLOT(deleteLater()));
+
+                proc->moveToThread(thread3);
+
+                thread3->start();
+
+            }
+        } else {
+            on = false;
+        }
         if(!stream1Active && !stream2Active)
             stop = true;
     }
