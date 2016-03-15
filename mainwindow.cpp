@@ -64,6 +64,8 @@ void MainWindow::on_stopButton_clicked()
 
     handler->quit();
 
+    cvCfg.disconnect();
+
     this->refreshDisplays();
 }
 
@@ -121,4 +123,21 @@ void MainWindow::refreshDisplays()
     ui->label_2->clear();
     //ui->label->repaint();
     //ui->label_2->repaint();
+}
+
+void MainWindow::on_toolButton_2_clicked()
+{
+    try {
+
+        cvCfg.setModal(false);
+        cvCfg.show();
+        if(!handler->isStopped() && handler->isStream2Active())
+        {
+            cvCfg.init(*handler->get2);
+        } else {
+            cvCfg.disconnect();
+        }
+    } catch(std::exception &e) {
+        qDebug() << "Error: " << e.what();
+    }
 }

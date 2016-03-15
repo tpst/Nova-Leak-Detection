@@ -1,6 +1,5 @@
 #include "capturehandler.h"
 #include "streamconnector.h"
-#include "framegetter.h"
 #include "frameprocessor.h"
 
 // constructor
@@ -44,8 +43,7 @@ bool captureHandler::newConnection(cv::VideoCapture &capture, QString address)
     connect(c, SIGNAL(finished()), c, SLOT(deleteLater()));
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     thread->start();
-    //thread->wait();
-    thread->wait(6000); // wait some time for connection to establish.
+    thread->wait(5000); // wait some time for connection to establish.
 
     if(capture.isOpened()) {
         return true;
@@ -84,9 +82,6 @@ void captureHandler::run()
     thread1 = new QThread;
     thread2 = new QThread;
     thread3 = new QThread;
-
-    frameGetter* get1;
-    frameGetter* get2;
 
     if(stream1Active) {
 
@@ -132,6 +127,7 @@ void captureHandler::run()
         get2->moveToThread(thread2);
 
         thread2->start();
+
 
     }
 

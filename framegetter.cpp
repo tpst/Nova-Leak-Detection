@@ -36,16 +36,7 @@ void frameGetter::process()
                     } else {
                         emit procFrame(frame); // process this image
                         //frame 1
-                        if (frame.channels()== 3){
-                            cv::cvtColor(frame, RGBframe, CV_BGR2RGB);
-                            qFrame = QImage((const unsigned char*)(RGBframe.data),
-                                              RGBframe.cols,RGBframe.rows,QImage::Format_RGB888);
-                        }
-                        else
-                        {
-                            qFrame = QImage((const unsigned char*)(frame.data),
-                                                 frame.cols,frame.rows,QImage::Format_Indexed8);
-                        }
+                        qFrame = convertFrame(frame);
                         emit frameReady(qFrame);
                         this->msleep(5);
                     }
@@ -73,16 +64,7 @@ void frameGetter::process()
 
                 //this->rotate(image, 90, image);
 
-                if (image.channels()== 3){
-                    cv::cvtColor(image, RGBframe, CV_BGR2RGB);
-                    qFrame = QImage((const unsigned char*)(RGBframe.data),
-                                      RGBframe.cols,RGBframe.rows,QImage::Format_RGB888);
-                }
-                else
-                {
-                    qFrame = QImage((const unsigned char*)(image.data),
-                                         image.cols,image.rows,QImage::Format_Indexed8);
-                }
+                qFrame = convertFrame(image);
                 emit frameReady(qFrame);
                 this->msleep(5);
 
@@ -105,6 +87,22 @@ void frameGetter::msleep(int ms)
 {
     struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
     nanosleep(&ts, NULL);
+}
+
+QImage frameGetter::convertFrame(cv::Mat frame)
+{
+    QImage _qFrame;
+    if (frame.channels()== 3){
+        cv::cvtColor(frame, RGBframe, CV_BGR2RGB);
+        _qFrame = QImage((const unsigned char*)(RGBframe.data),
+                          RGBframe.cols,RGBframe.rows,QImage::Format_RGB888);
+    }
+    else
+    {
+        _qFrame = QImage((const unsigned char*)(frame.data),
+                             frame.cols,frame.rows,QImage::Format_Indexed8);
+    }
+    return _qFrame;
 }
 
 /**

@@ -11,6 +11,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/videoio.hpp>
 #include <opencv2/imgproc.hpp>
+
+#include "framegetter.h"
 \
 #include <flycapture/FlyCapture2.h>
 #include <iostream>
@@ -55,6 +57,9 @@ public:
     bool newConnection(cv::VideoCapture &capture, QString address);
 
     QString IP1, IP2;
+
+    frameGetter* get1;
+    frameGetter* get2;
 
 private:
     bool stream1Active;

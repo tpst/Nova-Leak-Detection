@@ -20,6 +20,7 @@ public:
     frameGetter(cv::VideoCapture &cap);
     ~frameGetter();
     void rotate(cv::Mat& src, double angle, cv::Mat& dst);
+    QImage convertFrame(cv::Mat frame);
 
 public slots:
     void process();

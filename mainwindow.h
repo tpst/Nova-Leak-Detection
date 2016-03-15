@@ -5,6 +5,7 @@
 
 #include "capturehandler.h"
 #include "configdialog.h"
+#include "cvconfig.h"
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
@@ -42,11 +43,13 @@ private slots:
 
     void refreshDisplays();
 
+    void on_toolButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;
     captureHandler* handler;
     configDialog cfg;
+    cvConfig cvCfg;
 };
 
 #endif // MAINWINDOW_H

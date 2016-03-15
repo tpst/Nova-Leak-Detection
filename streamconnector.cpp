@@ -19,7 +19,7 @@ void streamConnector::process()
         {
             qDebug() << "Opening " + address;
 
-            if(address == "http://0.../mjpg/video.mjpg") {
+            if(address == "http://.../mjpg/video.mjpg") {
                 cap->open(0); // open default webcam
             } else {
                 cap->open(address.toStdString());

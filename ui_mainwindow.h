@@ -42,6 +42,7 @@ public:
     QToolButton *toolButton;
     QPushButton *stopButton;
     QPushButton *processStream;
+    QToolButton *toolButton_2;
     QPushButton *recordStream;
     QSpacerItem *horizontalSpacer;
     QPushButton *exitButton;
@@ -118,6 +119,13 @@ public:
 
         horizontalLayout->addWidget(processStream);
 
+        toolButton_2 = new QToolButton(centralWidget);
+        toolButton_2->setObjectName(QStringLiteral("toolButton_2"));
+        sizePolicy.setHeightForWidth(toolButton_2->sizePolicy().hasHeightForWidth());
+        toolButton_2->setSizePolicy(sizePolicy);
+
+        horizontalLayout->addWidget(toolButton_2);
+
         recordStream = new QPushButton(centralWidget);
         recordStream->setObjectName(QStringLiteral("recordStream"));
 
@@ -142,6 +150,8 @@ public:
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
+        statusBar->setEnabled(true);
+        statusBar->setStyleSheet(QStringLiteral(""));
         MainWindow->setStatusBar(statusBar);
 
         retranslateUi(MainWindow);
@@ -158,6 +168,7 @@ public:
         toolButton->setText(QApplication::translate("MainWindow", "...", 0));
         stopButton->setText(QApplication::translate("MainWindow", "Stop Stream", 0));
         processStream->setText(QApplication::translate("MainWindow", "Process", 0));
+        toolButton_2->setText(QApplication::translate("MainWindow", "...", 0));
         recordStream->setText(QApplication::translate("MainWindow", "Record", 0));
         exitButton->setText(QApplication::translate("MainWindow", "Exit", 0));
     } // retranslateUi
