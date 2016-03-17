@@ -1,6 +1,12 @@
 #ifndef FRAMEGETTER_H
 #define FRAMEGETTER_H
 
+#if defined(_MSC_VER) || defined(WIN32)  || defined(_WIN32) || defined(__WIN32__) \
+    || defined(WIN64) || defined(_WIN64) || defined(__WIN64__)
+
+#include <windows.h>
+#endif
+
 #include <QObject>
 #include <QDebug>
 #include <QImage>
@@ -9,14 +15,14 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
-#include <flycapture/FlyCapture2.h>
+//#include <flycapture/FlyCapture2.h>
 
 // Worker class responsible for grabbing a frame from stream
 class frameGetter : public QObject
 {
     Q_OBJECT
 public:
-    frameGetter(FlyCapture2::Camera &cam);
+    //frameGetter(FlyCapture2::Camera &cam);
     frameGetter(cv::VideoCapture &cap);
     ~frameGetter();
     void rotate(cv::Mat& src, double angle, cv::Mat& dst);
@@ -38,7 +44,7 @@ private:
     //variables
     bool cv; // controls whether process uses opencv or flycam
     bool streaming;
-    FlyCapture2::Camera *camera;
+    //FlyCapture2::Camera *camera;
     cv::VideoCapture *vc;
 
     QImage qFrame;

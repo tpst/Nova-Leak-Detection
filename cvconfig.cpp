@@ -11,6 +11,7 @@ cvConfig::cvConfig(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
     variableSetup();
     proc->copyVariables(values);
 
@@ -18,15 +19,22 @@ cvConfig::cvConfig(QWidget *parent) :
     //connect(this, SIGNAL(threshValueChanged(int)), proc, SLOT(updateThresh(int)));
     qRegisterMetaType< variables >("variables");
     qRegisterMetaType< cv::Mat >("cv::Mat");
-    connect(proc, SIGNAL(frameReady(QImage)), this, SLOT(updateDisplay(QImage)));
+    connect(proc, SIGNAL(displaySharpen(cv::Mat)), this, SLOT(updateDisplay1(cv::Mat)));
+    connect(proc, SIGNAL(displayContrast(cv::Mat)), this, SLOT(updateDisplay2(cv::Mat)));
+    connect(proc, SIGNAL(displayThresh(cv::Mat)), this, SLOT(updateDisplay3(cv::Mat)));
+    connect(proc, SIGNAL(displayOpen(cv::Mat)), this, SLOT(updateDisplay4(cv::Mat)));
+    connect(proc, SIGNAL(displayResult(cv::Mat)), this, SLOT(updateDisplay5(cv::Mat)));
+    connect(proc, SIGNAL(displayCrop(cv::Mat)), this, SLOT(updateDisplay6(cv::Mat)));
+
     connect(this, SIGNAL(finished()), thread, SLOT(quit()));
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     connect(this, SIGNAL(valueChanged(variables)), proc, SLOT(copyVariables(variables)));
 
     // TESTING  TESTING
-    test* t = new test();
+    t = new test();
+
     connect(t, SIGNAL(procFrame(cv::Mat)), proc, SLOT(testProcess(cv::Mat)));
-    connect(thread, SIGNAL(started()), t, SLOT(process()));
+    //connect(thread, SIGNAL(started()), t, SLOT(process()));
     // ----------------------------------------------------------------
     proc->moveToThread(thread);
     thread->start();
@@ -47,7 +55,7 @@ void cvConfig::variableSetup()
     ui->horizontalSlider->setValue(values.var.thresh);
     // size
     values.var.sSize = ui->lineEdit_7->text().toInt();
-    ui->lineEdit_7->setValidator(new QIntValidator(1, 15, this));
+    ui->lineEdit_7->setValidator(new QIntValidator(1, 20, this));
     ui->horizontalSlider_7->setValue(values.var.sSize);
 
     // -- Sharpening
@@ -57,7 +65,7 @@ void cvConfig::variableSetup()
     ui->horizontalSlider_2->setValue(values.var.alpha);
     //-- Beta
     values.var.beta = ui->lineEdit_3->text().toInt();
-    ui->lineEdit_3->setValidator(new QIntValidator(0, 10000, this));
+    ui->lineEdit_3->setValidator(new QIntValidator(0, 2000, this));
     ui->horizontalSlider_3->setValue(values.var.beta);
     // -- Gamma
     values.var.gamma = ui->lineEdit_4->text().toInt();
@@ -77,13 +85,18 @@ void cvConfig::variableSetup()
     // -- Morphological Opening
     // -- size X
     values.var.ssSizeX = ui->lineEdit_8->text().toInt();
-    ui->lineEdit_8->setValidator(new QIntValidator(1, 15, this));
+    ui->lineEdit_8->setValidator(new QIntValidator(1, 20, this));
     ui->horizontalSlider_8->setValue(values.var.ssSizeX);
     // -- Size Y
     values.var.ssSizeY = ui->lineEdit_9->text().toInt();
-    ui->lineEdit_9->setValidator(new QIntValidator(1, 15, this));
+    ui->lineEdit_9->setValidator(new QIntValidator(1, 20, this));
     ui->horizontalSlider_9->setValue(values.var.ssSizeY);
 
+    //cropping
+    values.var.x = ui->cropx->value();
+    values.var.y = ui->cropy->value();
+    values.var.width = ui->cropwidth->value();
+    values.var.height = ui->cropheight->value();
 }
 
 void cvConfig::init(frameGetter &get)
@@ -103,6 +116,94 @@ void cvConfig::disconnect()
     connected = false;
 }
 
+//Sharpen
+void cvConfig::updateDisplay1(cv::Mat _frame)
+{
+    QImage frame = convertFrame(_frame);
+    if(!frame.isNull())
+    {
+        ui->label->setAlignment(Qt::AlignCenter);
+        ui->label->setPixmap(QPixmap::fromImage(frame).scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
+    } else {
+        qDebug() << "NULL";
+    }
+}
+//contrast
+void cvConfig::updateDisplay2(cv::Mat _frame)
+{
+    QImage frame = convertFrame(_frame);
+    if(!frame.isNull())
+    {
+        ui->label_15->setAlignment(Qt::AlignCenter);
+        ui->label_15->setPixmap(QPixmap::fromImage(frame).scaled(ui->label_15->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
+    }
+}
+//thresh
+void cvConfig::updateDisplay3(cv::Mat _frame)
+{
+    QImage frame = convertFrame(_frame);
+    if(!frame.isNull())
+    {
+        ui->label_16->setAlignment(Qt::AlignCenter);
+        ui->label_16->setPixmap(QPixmap::fromImage(frame).scaled(ui->label_16->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
+    }
+}
+//open
+void cvConfig::updateDisplay4(cv::Mat _frame)
+{
+    QImage frame = convertFrame(_frame);
+    if(!frame.isNull())
+    {
+        ui->label_17->setAlignment(Qt::AlignCenter);
+        ui->label_17->setPixmap(QPixmap::fromImage(frame).scaled(ui->label_17->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
+    }
+}
+//reslt
+void cvConfig::updateDisplay5(cv::Mat _frame)
+{
+    QImage frame = convertFrame(_frame);
+    if(!frame.isNull())
+    {
+        ui->label_18->setAlignment(Qt::AlignCenter);
+        ui->label_18->setPixmap(QPixmap::fromImage(frame).scaled(ui->label_18->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
+    }
+}
+//crop
+void cvConfig::updateDisplay6(cv::Mat _frame)
+{
+    QImage frame = convertFrame(_frame);
+    if(!frame.isNull())
+    {
+        ui->label_19->setAlignment(Qt::AlignCenter);
+        ui->label_19->setPixmap(QPixmap::fromImage(frame).scaled(ui->label_19->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
+    }
+}
+
+QImage cvConfig::convertFrame(cv::Mat frame)
+{
+    QImage _qFrame;
+    cv::Mat RGBframe = frame.clone();
+    if (frame.channels()== 3){
+        cv::cvtColor(frame, RGBframe, CV_BGR2RGB);
+        _qFrame = QImage((const unsigned char*)(RGBframe.data),
+                          RGBframe.cols,RGBframe.rows,QImage::Format_RGB888);
+    }
+    else
+    {
+        _qFrame = QImage((const unsigned char*)(frame.data),
+                             frame.cols,frame.rows,QImage::Format_Indexed8);
+    }
+    return _qFrame;
+}
+
+void cvConfig::on_cvConfig_finished(int result)
+{
+    if(on)
+        on = false;
+    t->on=false;
+}
+
+
 // Threshold
 void cvConfig::on_horizontalSlider_valueChanged(int value)
 {
@@ -119,22 +220,6 @@ void cvConfig::on_lineEdit_textEdited(const QString &arg1)
 
 // Size
 
-void cvConfig::updateDisplay(QImage frame)
-{
-    if(!frame.isNull())
-    {
-        ui->label->setAlignment(Qt::AlignCenter);
-        ui->label->setPixmap(QPixmap::fromImage(frame).scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
-    } else {
-        qDebug() << "NULL";
-    }
-}
-
-void cvConfig::on_cvConfig_finished(int result)
-{
-    if(on)
-        on = false;
-}
 
 void cvConfig::on_horizontalSlider_7_valueChanged(int value)
 {
@@ -257,4 +342,34 @@ void cvConfig::on_lineEdit_9_textEdited(const QString &arg1)
     values.var.ssSizeY = arg1.toInt();
     ui->horizontalSlider_9->setValue(values.var.ssSizeY);
     emit valueChanged(values);
+}
+
+void cvConfig::on_cropx_valueChanged(int value)
+{
+    values.var.x = value;
+    emit valueChanged(values);
+}
+
+void cvConfig::on_cropy_valueChanged(int value)
+{
+    values.var.y = value;
+    emit valueChanged(values);
+}
+
+void cvConfig::on_cropwidth_valueChanged(int value)
+{
+    values.var.width = value;
+    emit valueChanged(values);
+}
+
+
+void cvConfig::on_cropheight_valueChanged(int value)
+{
+    values.var.height = value;
+    emit valueChanged(values);
+}
+
+void cvConfig::on_applyButton_clicked()
+{
+    emit applySettings(values);
 }

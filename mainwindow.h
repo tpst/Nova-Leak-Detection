@@ -49,7 +49,7 @@ private:
     Ui::MainWindow *ui;
     captureHandler* handler;
     configDialog cfg;
-    cvConfig cvCfg;
+    cvConfig* cvCfg;
 };
 
 #endif // MAINWINDOW_H

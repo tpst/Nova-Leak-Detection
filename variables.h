@@ -24,8 +24,8 @@ public:
         int ssSizeX, ssSizeY;
 
         // cropping
-        int x, y;
-        int width, height;
+        double x, y;
+        double width, height;
         int imRows, imCols;
     } var;
 };

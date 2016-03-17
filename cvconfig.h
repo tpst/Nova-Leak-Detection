@@ -21,21 +21,32 @@ class cvConfig : public QDialog
     Q_OBJECT
 
 public:
+    // ---
+    test* t;
+    // -------
+
+
     explicit cvConfig(QWidget *parent = 0);
     ~cvConfig();
 
     void init(frameGetter &get);
     void variableSetup();
     void disconnect();
+    QImage convertFrame(cv::Mat frame);
 
 private slots:
+    void updateDisplay1(cv::Mat _frame);
+    void updateDisplay2(cv::Mat _frame);
+    void updateDisplay3(cv::Mat _frame);
+    void updateDisplay4(cv::Mat _frame);
+    void updateDisplay5(cv::Mat _frame);
+    void updateDisplay6(cv::Mat _frame);
+
+    void on_cvConfig_finished(int result);
+
     void on_horizontalSlider_valueChanged(int value);
 
     void on_lineEdit_textEdited(const QString &arg1);
-
-    void updateDisplay(QImage frame);
-
-    void on_cvConfig_finished(int result);
 
     void on_horizontalSlider_7_valueChanged(int value);
 
@@ -69,10 +80,21 @@ private slots:
 
     void on_lineEdit_9_textEdited(const QString &arg1);
 
+    void on_cropx_valueChanged(int value);
+
+    void on_cropy_valueChanged(int value);
+
+    void on_cropwidth_valueChanged(int value);
+
+    void on_cropheight_valueChanged(int value);
+
+    void on_applyButton_clicked();
+
 signals:
     void valueChanged(variables v);
     void finished();
-    void doStuff();
+    void applySettings(variables v);
+
 private:
     Ui::cvConfig *ui;
 
@@ -87,6 +109,7 @@ private:
     QThread* thread;
 
     variables values;
+
 };
 
 #endif // CVCONFIG_H

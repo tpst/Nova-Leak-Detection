@@ -13,9 +13,14 @@ TEMPLATE = app
 
 CONFIG+=static
 
-INCLUDEPATH += /usr/local/include/
-LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_videoio -lopencv_imgproc
-LIBS += -L/usr/lib -lflycapture -lflycapture-c -lflycapturegui
+INCLUDEPATH += -I/home/zzaj/src/mxe/usr/i686-w64-mingw32.static/include
+LIBS += -L/home/zzaj/src/mxe/usr/i686-w64-mingw32.static/lib -lopencv_shape300 -lopencv_stitching300 -lopencv_objdetect300 -lopencv_superres300 -lopencv_videostab300 -lopencv_calib3d300 -lopencv_features2d300 -lopencv_highgui300 -lopencv_videoio300 -lopencv_imgcodecs300 -lopencv_video300 -lopencv_photo300 -lopencv_ml300 -lopencv_imgproc300 -lopencv_flann300 -lopencv_core300 -lvfw32 -lmsvfw32 -lopencv_hal300
+
+
+#INCLUDEPATH += /usr/local/include/
+#LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_videoio -lopencv_imgproc
+
+#LIBS += -L/usr/lib -lflycapture -lflycapture-c -lflycapturegui
 
 SOURCES += main.cpp\
         mainwindow.cpp \

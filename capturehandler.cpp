@@ -2,12 +2,23 @@
 #include "streamconnector.h"
 #include "frameprocessor.h"
 
+#include <QApplication>
+
 // constructor
-captureHandler::captureHandler(QObject* parent) : QThread(parent)
+captureHandler::captureHandler(QObject* parent) : QThread(parent), on(false)
 {
     stop = true;
     record = false;
     processActive = false;
+
+    proc = new frameProcessor(on);
+    connected = false;
+    qRegisterMetaType< variables >("variables");
+    connect(this, SIGNAL(applySettings(variables)), proc, SLOT(copyVariables(variables)));
+
+    thread3 = new QThread;
+    proc->moveToThread(thread3);
+    thread3->start();
 }
 
 captureHandler::~captureHandler()
@@ -81,30 +92,30 @@ void captureHandler::run()
 
     thread1 = new QThread;
     thread2 = new QThread;
-    thread3 = new QThread;
+    //thread3 = new QThread;
 
     if(stream1Active) {
 
         //thread1 = new QThread;
-        get1 = new frameGetter(camera);
+//        get1 = new frameGetter(camera);
 
-        connect(thread1, SIGNAL(started()), get1, SLOT(process()));
+//        connect(thread1, SIGNAL(started()), get1, SLOT(process()));
 
-        connect(get1, SIGNAL(frameReady(QImage)), this, SIGNAL(frameReady(QImage)));
+//        connect(get1, SIGNAL(frameReady(QImage)), this, SIGNAL(frameReady(QImage)));
 
-        connect(get1, SIGNAL(finished()), thread1, SLOT(quit()));
+//        connect(get1, SIGNAL(finished()), thread1, SLOT(quit()));
 
-        connect(get1, SIGNAL(finished()), get1, SLOT(deleteLater()));
+//        connect(get1, SIGNAL(finished()), get1, SLOT(deleteLater()));
 
-        connect(thread1, SIGNAL(finished()), thread1, SLOT(deleteLater()));
+//        connect(thread1, SIGNAL(finished()), thread1, SLOT(deleteLater()));
 
-        connect(this, SIGNAL(streamOver()), get1, SLOT(endStream()));
+//        connect(this, SIGNAL(streamOver()), get1, SLOT(endStream()));
 
-        connect(get1, SIGNAL(refreshDisplays()), this, SIGNAL(refreshDisplays()));
+//        connect(get1, SIGNAL(refreshDisplays()), this, SIGNAL(refreshDisplays()));
 
-        get1->moveToThread(thread1);
+//        get1->moveToThread(thread1);
 
-        thread1->start();
+//        thread1->start();
     }
 
     if(stream2Active) {
@@ -131,8 +142,9 @@ void captureHandler::run()
 
     }
 
-    bool on = false; // logic for image processing stream
-    frameProcessor* proc;
+    //bool on = false; // logic for image processing stream
+    //frameProcessor* proc;
+
     // Main process loop for capturing video
     while(!stop)
     {
@@ -141,26 +153,22 @@ void captureHandler::run()
             if(!on) {
                 // processor is off - initialise new one.
                 on = true;
+                if(!connected) {
+                    connect(get2, SIGNAL(procFrame(cv::Mat)), proc, SLOT(process(cv::Mat)));
 
-                proc = new frameProcessor(on);
+                    connect(proc, SIGNAL(frameReady(QImage)), this, SIGNAL(frameReady2(QImage)));
 
-                //connect(thread3, SIGNAL(started()), proc, SLOT(process()));
+                    connect(proc, SIGNAL(finished()), thread3, SLOT(quit()));
 
-                connect(get2, SIGNAL(procFrame(cv::Mat)), proc, SLOT(process(cv::Mat)));
+                    connect(proc, SIGNAL(finished()), proc, SLOT(deleteLater()));
 
-                connect(proc, SIGNAL(frameReady(QImage)), this, SIGNAL(frameReady2(QImage)));
+                    connect(get2, SIGNAL(finished()), proc, SIGNAL(finished()));
 
-                connect(proc, SIGNAL(finished()), thread3, SLOT(quit()));
+                    connect(thread3, SIGNAL(finished()), thread3, SLOT(deleteLater()));
+                    connected = true;
+                }
 
-                connect(proc, SIGNAL(finished()), proc, SLOT(deleteLater()));
-
-                connect(get2, SIGNAL(finished()), proc, SIGNAL(finished()));
-
-                connect(thread3, SIGNAL(finished()), thread3, SLOT(deleteLater()));
-
-                proc->moveToThread(thread3);
-
-                thread3->start();
+                //connect(this, SIGNAL(applySettings(variables)), proc, SLOT(copyVariables(variables)));
 
             }
         } else {
@@ -173,42 +181,42 @@ void captureHandler::run()
 }
 
 bool captureHandler::openFlyCam() {
-    FlyCapture2::Error error;
-    //                Camera camera;
-    CameraInfo camInfo;
+//    FlyCapture2::Error error;
+//    //                Camera camera;
+//    CameraInfo camInfo;
 
-    // Connect the camera
-    error = camera.Connect( 0 );
-    if ( error != PGRERROR_OK )
-    {
-        std::cout << "Failed to connect to camera" << std::endl;
-        return false;
-    }
+//    // Connect the camera
+//    error = camera.Connect( 0 );
+//    if ( error != PGRERROR_OK )
+//    {
+//        std::cout << "Failed to connect to camera" << std::endl;
+//        return false;
+//    }
 
 
-    // Get the camera info and print it out
-    error = camera.GetCameraInfo( &camInfo );
-    if ( error != PGRERROR_OK )
-    {
-        std::cout << "Failed to get camera info from camera" << std::endl;
-        //return false;
-    }
-    std::cout << camInfo.vendorName << " "
-              << camInfo.modelName << " "
-              << camInfo.serialNumber << std::endl;
+//    // Get the camera info and print it out
+//    error = camera.GetCameraInfo( &camInfo );
+//    if ( error != PGRERROR_OK )
+//    {
+//        std::cout << "Failed to get camera info from camera" << std::endl;
+//        //return false;
+//    }
+//    std::cout << camInfo.vendorName << " "
+//              << camInfo.modelName << " "
+//              << camInfo.serialNumber << std::endl;
 
-    error = camera.StartCapture();
-    if ( error == PGRERROR_ISOCH_BANDWIDTH_EXCEEDED )
-    {
-        std::cout << "Bandwidth exceeded" << std::endl;
-        return false;
-    }
-    else if ( error != PGRERROR_OK )
-    {
-        std::cout << "Failed to start image capture" << std::endl;
-        return false;
-    }
-    return true;
+//    error = camera.StartCapture();
+//    if ( error == PGRERROR_ISOCH_BANDWIDTH_EXCEEDED )
+//    {
+//        std::cout << "Bandwidth exceeded" << std::endl;
+//        return false;
+//    }
+//    else if ( error != PGRERROR_OK )
+//    {
+//        std::cout << "Failed to start image capture" << std::endl;
+//        return false;
+//    }
+//    return true;
 }
 
 //void captureHandler::recordStream()
@@ -222,10 +230,10 @@ void captureHandler::Stop()
 
     record = false;
     stop = true;
-
-    vc.release();
+    std::cout << "RELEASING CAMERA?" << std::endl;
+    //vc.release();
     vc2.release();
-    camera.Disconnect();
+    //camera.Disconnect();
 
     qDebug() << "Streaming halted.";
 
@@ -236,8 +244,14 @@ void captureHandler::Stop()
 
 void captureHandler::msleep(int ms)
 {
+#ifdef unix
     struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
     nanosleep(&ts, NULL);
+#endif
+#if defined(_MSC_VER) || defined(WIN32)  || defined(_WIN32) || defined(__WIN32__) \
+|| defined(WIN64) || defined(_WIN64) || defined(__WIN64__)
+    Sleep(ms);
+#endif
 }
 
 void captureHandler::toggleStream1(bool value)

@@ -1,14 +1,14 @@
 #include "framegetter.h"
 
 using namespace cv;
-using namespace FlyCapture2;
+//using namespace FlyCapture2;
 
-frameGetter::frameGetter(FlyCapture2::Camera &cam)
-{
-    cv = false;
-    camera = &cam;
-    streaming = true;
-}
+//frameGetter::frameGetter(FlyCapture2::Camera &cam)
+//{
+//    cv = false;
+//    camera = &cam;
+//    streaming = true;
+//}
 
 frameGetter::frameGetter(cv::VideoCapture &cap)
 {
@@ -44,29 +44,29 @@ void frameGetter::process()
                     streaming = false;
                 }
             } else {
-                Image rawImage;
-                FlyCapture2::Error error = camera->RetrieveBuffer( &rawImage );
-                if ( error != PGRERROR_OK )
-                {
-                   // std::cout << "capture error" << std::endl;
+//                Image rawImage;
+//                FlyCapture2::Error error = camera->RetrieveBuffer( &rawImage );
+//                if ( error != PGRERROR_OK )
+//                {
+//                   // std::cout << "capture error" << std::endl;
 
-                    //qDebug() << "FlyCam Capture Error";
-                    continue;
-                }
+//                    //qDebug() << "FlyCam Capture Error";
+//                    continue;
+//                }
 
-                // convert to rgb
-                Image rgbImage;
-                rawImage.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
+//                // convert to rgb
+//                Image rgbImage;
+//                rawImage.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
 
-                // convert to OpenCV Mat
-                unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();
-                cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
+//                // convert to OpenCV Mat
+//                unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();
+//                cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
 
-                //this->rotate(image, 90, image);
+//                //this->rotate(image, 90, image);
 
-                qFrame = convertFrame(image);
-                emit frameReady(qFrame);
-                this->msleep(5);
+//                qFrame = convertFrame(image);
+//                emit frameReady(qFrame);
+//                this->msleep(5);
 
             }
         } catch(std::exception &e) {
@@ -85,9 +85,16 @@ void frameGetter::endStream()
 
 void frameGetter::msleep(int ms)
 {
+#ifdef unix
     struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
     nanosleep(&ts, NULL);
+#endif
+#if defined(_MSC_VER) || defined(WIN32)  || defined(_WIN32) || defined(__WIN32__) \
+|| defined(WIN64) || defined(_WIN64) || defined(__WIN64__)
+    Sleep(ms);
+#endif
 }
+
 
 QImage frameGetter::convertFrame(cv::Mat frame)
 {

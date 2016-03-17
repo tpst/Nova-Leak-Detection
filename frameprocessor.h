@@ -1,6 +1,10 @@
 #ifndef FRAMEPROCESSOR_H
 #define FRAMEPROCESSOR_H
+#if defined(_MSC_VER) || defined(WIN32)  || defined(_WIN32) || defined(__WIN32__) \
+    || defined(WIN64) || defined(_WIN64) || defined(__WIN64__)
 
+#include <windows.h>
+#endif
 #include <QObject>
 #include <QDebug>
 #include <QImage>
@@ -33,19 +37,31 @@ signals:
     void finished();
     void frameReady(QImage qFrame);
 
+    void displaySharpen(cv::Mat frame);
+    void displayContrast(cv::Mat frame);
+    void displayThresh(cv::Mat frame);
+    void displayOpen(cv::Mat frame);
+    void displayResult(cv::Mat frame);
+    void displayCrop(cv::Mat frame);
+
 private:
     //variables
     QImage qFrame;
-    cv::Mat frame, RGBframe;
     cv::Mat frameClone, dst; // result frame
-    cv::Mat frameC; //contrast frame
+    cv::Mat element; // structuring element
+
+    cv::Mat sharpened;
+    cv::Mat contrast;
+    cv::Mat thresholded;
+    cv::Mat opened;
 
     cv::VideoCapture vc;
 
     bool *run;
     int thresh;
 
-    void detectLeaks(cv::Mat& frame);
+    void detectLeaks(cv::Mat frame);
+    cv::Mat crop(cv::Mat frame);
 
     variables values;
 

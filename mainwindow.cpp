@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "variables.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -11,17 +12,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     handler = new captureHandler();
 
+    cvCfg = new cvConfig();
+
     // Allow Mats to be passed through signal
-    qRegisterMetaType< cv::Mat >("cv::Mat");
+    qRegisterMetaType< variables >("variables");
     connect(ui->exitButton, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
     connect(handler, SIGNAL(frameReady(QImage)), this, SLOT(updateDisplay(QImage)));
     connect(handler, SIGNAL(frameReady2(QImage)), this, SLOT(updateDisplay2(QImage)));
     connect(handler, SIGNAL(refreshDisplays()), this, SLOT(refreshDisplays()));
+    connect(cvCfg, SIGNAL(applySettings(variables)), handler, SIGNAL(applySettings(variables)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+
 }
 
 void MainWindow::on_AddStream_clicked()
@@ -64,7 +69,7 @@ void MainWindow::on_stopButton_clicked()
 
     handler->quit();
 
-    cvCfg.disconnect();
+    cvCfg->disconnect();
 
     this->refreshDisplays();
 }
@@ -127,17 +132,20 @@ void MainWindow::refreshDisplays()
 
 void MainWindow::on_toolButton_2_clicked()
 {
-    try {
 
-        cvCfg.setModal(false);
-        cvCfg.show();
-        if(!handler->isStopped() && handler->isStream2Active())
-        {
-            cvCfg.init(*handler->get2);
-        } else {
-            cvCfg.disconnect();
-        }
-    } catch(std::exception &e) {
-        qDebug() << "Error: " << e.what();
+    cvCfg->setModal(false);
+    cvCfg->show();
+    if(!handler->isStopped() && handler->isStream2Active())
+    {
+        cvCfg->init(*handler->get2);
+    } else {
+        cvCfg->disconnect();
     }
+    // this will be fine when its loading from stream.
+//    if(cvCfg->t->on) {
+//        cvCfg->t->on = false;
+//    } else {
+//        cvCfg->t->on = true;
+//    }
+    cvCfg->t->process();
 }

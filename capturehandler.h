@@ -1,6 +1,13 @@
 #ifndef CAPTUREHANDLER_H
 #define CAPTUREHANDLER_H
 
+#if defined(_MSC_VER) || defined(WIN32)  || defined(_WIN32) || defined(__WIN32__) \
+    || defined(WIN64) || defined(_WIN64) || defined(__WIN64__)
+
+#include <windows.h>
+#endif
+
+
 #include <QObject>
 #include <QThread>
 #include <QImage>
@@ -13,12 +20,14 @@
 #include <opencv2/imgproc.hpp>
 
 #include "framegetter.h"
+#include "variables.h"
+#include "frameprocessor.h"
 \
-#include <flycapture/FlyCapture2.h>
+//#include <flycapture/FlyCapture2.h>
 #include <iostream>
 
 using namespace cv;
-using namespace FlyCapture2;
+//using namespace FlyCapture2;
 
 class captureHandler : public QThread
 {
@@ -73,12 +82,17 @@ private:
 
     VideoCapture vc;
     VideoCapture vc2;
-    Camera camera;
+    //Camera camera;
 
     // Seperate threads for image capture and processing
     QThread* thread1;
     QThread* thread2;
     QThread* thread3;
+
+    // frame processing logic
+    frameProcessor* proc;
+    bool on;
+    bool connected;
 
 protected:
     void run();
@@ -90,6 +104,7 @@ signals:
     void saveStream(cv::Mat frame);
     void streamOver();
     void refreshDisplays();
+    void applySettings(variables v);
 
 };
 
