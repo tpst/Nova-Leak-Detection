@@ -1,4 +1,5 @@
 #include "streamconnector.h"
+#include <iostream>
 
 streamConnector::streamConnector(cv::VideoCapture &capture, QString addr)
 {
@@ -15,9 +16,11 @@ streamConnector::~streamConnector()
 void streamConnector::process()
 {
     try {
+        std::cout << " connecting: " << cap->isOpened() << std::endl;
         if(!cap->isOpened())
         {
             qDebug() << "Opening " + address;
+            std::cout << address.toStdString() << std::endl;
 
             if(address == "http://.../mjpg/video.mjpg") {
                 cap->open(0); // open default webcam
@@ -27,9 +30,16 @@ void streamConnector::process()
 
         }
 
+
     } catch(std::exception &e) {
         qDebug() << "Stream could not connect. Returned error: " << e.what();
     }
 
-    emit finished();
+//    cv::Mat frame;
+//    cap->read(frame);
+//    imshow("frame", frame);
+
+//    qDebug() << "asdsad" << cap->isOpened();
+//    cv::waitKey(0);
+    //emit finished();
 }

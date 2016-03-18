@@ -23,10 +23,13 @@ class frameGetter : public QObject
     Q_OBJECT
 public:
     //frameGetter(FlyCapture2::Camera &cam);
-    frameGetter(cv::VideoCapture &cap);
+    frameGetter(bool ip);
     ~frameGetter();
     void rotate(cv::Mat& src, double angle, cv::Mat& dst);
     QImage convertFrame(cv::Mat frame);
+    bool openFlyCam();
+    int newConnection(QString IP);
+    void msleep(int ms);
 
 public slots:
     void process();
@@ -38,14 +41,12 @@ signals:
     void refreshDisplays();
     void error(QString err);
 
-protected:
-    void msleep(int ms);
 private:
     //variables
     bool cv; // controls whether process uses opencv or flycam
     bool streaming;
     //FlyCapture2::Camera *camera;
-    cv::VideoCapture *vc;
+    cv::VideoCapture vc;
 
     QImage qFrame;
     cv::Mat frame, RGBframe;

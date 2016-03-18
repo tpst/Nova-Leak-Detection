@@ -36,8 +36,7 @@ public:
     captureHandler(QObject *parent = 0);
     ~captureHandler();
 
-    //Initiate video stream
-    void playStream();
+
     //Record current stream
     void recordStream();
     //check if stream is stopped
@@ -70,6 +69,11 @@ public:
     frameGetter* get1;
     frameGetter* get2;
 
+public slots:
+    //Initiate video stream
+    void playStream();
+    void endStreams();
+
 private:
     bool stream1Active;
     bool stream2Active;
@@ -90,9 +94,12 @@ private:
     QThread* thread3;
 
     // frame processing logic
-    frameProcessor* proc;
+    frameProcessor* proc; // configuration
+    frameProcessor* proc2; // for mainwindow - copys cfg settings
     bool on;
     bool connected;
+
+    bool init; // only init captures once.
 
 protected:
     void run();
@@ -103,6 +110,7 @@ signals:
     void frameReady2(QImage frame2);
     void saveStream(cv::Mat frame);
     void streamOver();
+    void startStream();
     void refreshDisplays();
     void applySettings(variables v);
 

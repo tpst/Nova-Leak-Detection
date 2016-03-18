@@ -44,7 +44,7 @@ cvConfig::cvConfig(QWidget *parent) :
 cvConfig::~cvConfig()
 {
     delete ui;
-    emit finished();
+    //emit finished();
 }
 
 void cvConfig::variableSetup()

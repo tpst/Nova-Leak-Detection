@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(handler, SIGNAL(frameReady(QImage)), this, SLOT(updateDisplay(QImage)));
     connect(handler, SIGNAL(frameReady2(QImage)), this, SLOT(updateDisplay2(QImage)));
     connect(handler, SIGNAL(refreshDisplays()), this, SLOT(refreshDisplays()));
+    connect(this, SIGNAL(playNewStream()), handler, SLOT(playStream()));
+    connect(this, SIGNAL(endStreams()), handler, SLOT(endStreams()));
     connect(cvCfg, SIGNAL(applySettings(variables)), handler, SIGNAL(applySettings(variables)));
 }
 
@@ -40,7 +42,8 @@ void MainWindow::on_AddStream_clicked()
 
         this->refreshDisplays();
 
-        handler->playStream();
+        emit playNewStream();
+        //handler->playStream();
     }
 }
 
@@ -65,9 +68,8 @@ void MainWindow::updateDisplay2(QImage frame)
 void MainWindow::on_stopButton_clicked()
 {
     // stop streams
-    handler->Stop();
-
-    handler->quit();
+    //handler->Stop();
+    emit endStreams();
 
     cvCfg->disconnect();
 
@@ -76,7 +78,8 @@ void MainWindow::on_stopButton_clicked()
 
 void MainWindow::on_exitButton_clicked()
 {
-    handler->Stop();
+    //handler->Stop();
+    handler->quit();
     close();
 }
 
@@ -137,7 +140,7 @@ void MainWindow::on_toolButton_2_clicked()
     cvCfg->show();
     if(!handler->isStopped() && handler->isStream2Active())
     {
-        cvCfg->init(*handler->get2);
+        //cvCfg->init(*handler->get2);
     } else {
         cvCfg->disconnect();
     }

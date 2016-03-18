@@ -129,7 +129,7 @@ public:
         lineEdit_2->setText(QApplication::translate("configDialog", "...", 0));
         radioButton_2->setText(QApplication::translate("configDialog", "Connect", 0));
         lineEdit->setInputMask(QApplication::translate("configDialog", "000.000.000.000", 0));
-        lineEdit->setText(QApplication::translate("configDialog", "192.168.20.102", 0));
+        lineEdit->setText(QApplication::translate("configDialog", "...", 0));
         radioButton->setText(QApplication::translate("configDialog", "Connect", 0));
         radioButton_3->setText(QApplication::translate("configDialog", "BlackFly Cam Active", 0));
     } // retranslateUi

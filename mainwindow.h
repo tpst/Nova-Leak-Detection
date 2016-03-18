@@ -44,6 +44,10 @@ private slots:
     void refreshDisplays();
 
     void on_toolButton_2_clicked();
+signals:
+    void playNewStream();
+
+    void endStreams();
 
 private:
     Ui::MainWindow *ui;

@@ -23,7 +23,6 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSlider>
-#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -77,11 +76,12 @@ public:
     QLineEdit *lineEdit_3;
     QLabel *label_5;
     QLineEdit *lineEdit_4;
+    QFrame *line_8;
     QLabel *label_14;
     QSlider *horizontalSlider_2;
+    QFrame *line_5;
     QFrame *line;
     QSlider *horizontalSlider_9;
-    QFrame *line_5;
     QHBoxLayout *horizontalLayout_4;
     QLabel *label_12;
     QLineEdit *lineEdit_8;
@@ -101,17 +101,15 @@ public:
     QLabel *label_10;
     QLineEdit *lineEdit_7;
     QSlider *horizontalSlider_4;
-    QSlider *horizontalSlider_6;
-    QSpacerItem *verticalSpacer;
-    QLabel *label_7;
     QFrame *line_9;
+    QSlider *horizontalSlider_6;
     QFrame *line_6;
+    QLabel *label_7;
     QSlider *horizontalSlider_8;
     QLabel *label_6;
-    QFrame *line_8;
-    QSlider *horizontalSlider_7;
     QFrame *line_10;
     QLabel *label_20;
+    QSlider *horizontalSlider_7;
     QFrame *line_3;
     QFrame *line_11;
     QDialogButtonBox *buttonBox;
@@ -121,7 +119,7 @@ public:
     {
         if (cvConfig->objectName().isEmpty())
             cvConfig->setObjectName(QStringLiteral("cvConfig"));
-        cvConfig->resize(722, 683);
+        cvConfig->resize(722, 697);
         gridLayout_3 = new QGridLayout(cvConfig);
         gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
         frame = new QFrame(cvConfig);
@@ -388,6 +386,13 @@ public:
 
         gridLayout->addLayout(horizontalLayout, 7, 0, 1, 1);
 
+        line_8 = new QFrame(widget);
+        line_8->setObjectName(QStringLiteral("line_8"));
+        line_8->setFrameShape(QFrame::HLine);
+        line_8->setFrameShadow(QFrame::Sunken);
+
+        gridLayout->addWidget(line_8, 19, 0, 1, 1);
+
         label_14 = new QLabel(widget);
         label_14->setObjectName(QStringLiteral("label_14"));
         label_14->setAlignment(Qt::AlignCenter);
@@ -402,6 +407,13 @@ public:
         horizontalSlider_2->setTickPosition(QSlider::NoTicks);
 
         gridLayout->addWidget(horizontalSlider_2, 8, 0, 1, 1);
+
+        line_5 = new QFrame(widget);
+        line_5->setObjectName(QStringLiteral("line_5"));
+        line_5->setFrameShape(QFrame::HLine);
+        line_5->setFrameShadow(QFrame::Sunken);
+
+        gridLayout->addWidget(line_5, 4, 0, 1, 1);
 
         line = new QFrame(widget);
         line->setObjectName(QStringLiteral("line"));
@@ -423,13 +435,6 @@ public:
         horizontalSlider_9->setOrientation(Qt::Horizontal);
 
         gridLayout->addWidget(horizontalSlider_9, 28, 0, 1, 1);
-
-        line_5 = new QFrame(widget);
-        line_5->setObjectName(QStringLiteral("line_5"));
-        line_5->setFrameShape(QFrame::HLine);
-        line_5->setFrameShadow(QFrame::Sunken);
-
-        gridLayout->addWidget(line_5, 4, 0, 1, 1);
 
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
@@ -570,6 +575,13 @@ public:
 
         gridLayout->addWidget(horizontalSlider_4, 10, 0, 1, 1);
 
+        line_9 = new QFrame(widget);
+        line_9->setObjectName(QStringLiteral("line_9"));
+        line_9->setFrameShape(QFrame::HLine);
+        line_9->setFrameShadow(QFrame::Sunken);
+
+        gridLayout->addWidget(line_9, 25, 0, 1, 1);
+
         horizontalSlider_6 = new QSlider(widget);
         horizontalSlider_6->setObjectName(QStringLiteral("horizontalSlider_6"));
         horizontalSlider_6->setMaximum(100000);
@@ -578,29 +590,18 @@ public:
 
         gridLayout->addWidget(horizontalSlider_6, 16, 0, 1, 1);
 
-        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        gridLayout->addItem(verticalSpacer, 30, 0, 1, 1);
-
-        label_7 = new QLabel(widget);
-        label_7->setObjectName(QStringLiteral("label_7"));
-        label_7->setAlignment(Qt::AlignCenter);
-
-        gridLayout->addWidget(label_7, 12, 0, 1, 1);
-
-        line_9 = new QFrame(widget);
-        line_9->setObjectName(QStringLiteral("line_9"));
-        line_9->setFrameShape(QFrame::HLine);
-        line_9->setFrameShadow(QFrame::Sunken);
-
-        gridLayout->addWidget(line_9, 25, 0, 1, 1);
-
         line_6 = new QFrame(widget);
         line_6->setObjectName(QStringLiteral("line_6"));
         line_6->setFrameShape(QFrame::HLine);
         line_6->setFrameShadow(QFrame::Sunken);
 
         gridLayout->addWidget(line_6, 6, 0, 1, 1);
+
+        label_7 = new QLabel(widget);
+        label_7->setObjectName(QStringLiteral("label_7"));
+        label_7->setAlignment(Qt::AlignCenter);
+
+        gridLayout->addWidget(label_7, 12, 0, 1, 1);
 
         horizontalSlider_8 = new QSlider(widget);
         horizontalSlider_8->setObjectName(QStringLiteral("horizontalSlider_8"));
@@ -619,22 +620,6 @@ public:
 
         gridLayout->addWidget(label_6, 5, 0, 1, 1);
 
-        line_8 = new QFrame(widget);
-        line_8->setObjectName(QStringLiteral("line_8"));
-        line_8->setFrameShape(QFrame::HLine);
-        line_8->setFrameShadow(QFrame::Sunken);
-
-        gridLayout->addWidget(line_8, 19, 0, 1, 1);
-
-        horizontalSlider_7 = new QSlider(widget);
-        horizontalSlider_7->setObjectName(QStringLiteral("horizontalSlider_7"));
-        horizontalSlider_7->setMinimum(1);
-        horizontalSlider_7->setMaximum(20);
-        horizontalSlider_7->setPageStep(1);
-        horizontalSlider_7->setOrientation(Qt::Horizontal);
-
-        gridLayout->addWidget(horizontalSlider_7, 22, 0, 1, 1);
-
         line_10 = new QFrame(widget);
         line_10->setObjectName(QStringLiteral("line_10"));
         line_10->setFrameShape(QFrame::HLine);
@@ -646,6 +631,15 @@ public:
         label_20->setObjectName(QStringLiteral("label_20"));
 
         gridLayout->addWidget(label_20, 1, 0, 1, 1);
+
+        horizontalSlider_7 = new QSlider(widget);
+        horizontalSlider_7->setObjectName(QStringLiteral("horizontalSlider_7"));
+        horizontalSlider_7->setMinimum(1);
+        horizontalSlider_7->setMaximum(20);
+        horizontalSlider_7->setPageStep(1);
+        horizontalSlider_7->setOrientation(Qt::Horizontal);
+
+        gridLayout->addWidget(horizontalSlider_7, 22, 0, 1, 1);
 
         line_3 = new QFrame(widget);
         line_3->setObjectName(QStringLiteral("line_3"));

@@ -1,86 +1,149 @@
+// new framegetter
+
 #include "framegetter.h"
+#include "streamconnector.h"
+#include "iostream"
+
+#include <QThread>
 
 using namespace cv;
-//using namespace FlyCapture2;
+// using namespace FlyCapture2;
 
-//frameGetter::frameGetter(FlyCapture2::Camera &cam)
-//{
-//    cv = false;
-//    camera = &cam;
-//    streaming = true;
-//}
-
-frameGetter::frameGetter(cv::VideoCapture &cap)
+/* frameGetter::frameGetter()
 {
-    cv = true;
-    vc = &cap;
+	// connect to FlyCam using their stupid SDK
+	cv = false;
+
+}*/
+
+frameGetter::frameGetter(bool ip)
+{
+    cv = ip;
+	// streaming = newConnection(vc, IP); this is called from capturehandler
+    //streaming = true;
+}
+
+frameGetter::~frameGetter() 
+{
+    streaming = false;
+}
+
+int frameGetter::newConnection(QString IP)
+{
+    try {
+        QThread* thread = new QThread;
+        streamConnector* c = new streamConnector(vc, IP);
+
+        c->moveToThread(thread);
+
+        connect(thread, SIGNAL(started()), c, SLOT(process()));
+        //connect(c, SIGNAL(finished()), thread, SLOT(quit()));
+        //connect(c, SIGNAL(finished()), c, SLOT(deleteLater()));
+        connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+        qDebug() << "attempting to connect";
+        thread->start();
+        thread->wait(5000); // wait some time for connection to establish.
+    } catch(std::exception &e) {
+        std::cout << "Error connecting: " << e.what() << std::endl;
+    }
+
+    if(vc.isOpened()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void frameGetter::process() 
+{
+    std::cout << "entered framegetter process" << std::endl;
+
     streaming = true;
-}
-
-frameGetter::~frameGetter()
-{
-
-}
-
-void frameGetter::process()
-{
-    while(streaming)
-    {
-        try {
-            // get an image
-            if(cv)
-            {
-                if(vc->isOpened()) {
-                    if(!vc->read(frame)) {
-                        qDebug() << "Cannot get image from stream 2";
+	// while on - capture images.
+    try {
+        while(streaming)
+        {
+            //std::cout << "streaming" << std::endl;
+            this->msleep(20);
+            if(cv) {
+                // capture from IP camera using openCV
+                if(vc.isOpened()) {
+                    if(!vc.read(frame)) {
+                        std::cout << "Could not get an image from IP camera" << std::endl;
                     } else {
-                        emit procFrame(frame); // process this image
-                        //frame 1
+                        //imshow("frame", frame);
+                        //waitKey(5);
+                        //emit procFrame(frame); // process this image
                         qFrame = convertFrame(frame);
                         emit frameReady(qFrame);
-                        this->msleep(5);
+                        //this->msleep(5);
                     }
                 } else {
                     streaming = false;
+                    qDebug() << "streaming off because capture not open";
                 }
+
             } else {
-//                Image rawImage;
-//                FlyCapture2::Error error = camera->RetrieveBuffer( &rawImage );
-//                if ( error != PGRERROR_OK )
-//                {
-//                   // std::cout << "capture error" << std::endl;
-
-//                    //qDebug() << "FlyCam Capture Error";
-//                    continue;
-//                }
-
-//                // convert to rgb
-//                Image rgbImage;
-//                rawImage.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
-
-//                // convert to OpenCV Mat
-//                unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();
-//                cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
-
-//                //this->rotate(image, 90, image);
-
-//                qFrame = convertFrame(image);
-//                emit frameReady(qFrame);
-//                this->msleep(5);
+                // Stupid stupid flycam
 
             }
-        } catch(std::exception &e) {
-            streaming = false;
-            qDebug() << "Framegetter failed to capture an image.";
+
+
         }
+        destroyAllWindows();
+        if(vc.isOpened()) {
+            //vc.release();
+        }
+    } catch(std::exception &e) {
+        std::cout << "Error capturing an image" << std::endl;
     }
-    emit refreshDisplays();
+
+    //emit finished();
 }
 
 void frameGetter::endStream()
 {
-    streaming = false;
-    emit finished();
+	streaming = false;
+}
+
+bool frameGetter::openFlyCam() {
+//    FlyCapture2::Error error;
+//    //                Camera camera;
+//    CameraInfo camInfo;
+
+//    // Connect the camera
+//    error = camera.Connect( 0 );
+//    if ( error != PGRERROR_OK )
+//    {
+//        std::cout << "Failed to connect to camera" << std::endl;
+//        return false;
+//    }
+
+
+//    // Get the camera info and print it out
+//    error = camera.GetCameraInfo( &camInfo );
+//    if ( error != PGRERROR_OK )
+//    {
+//        std::cout << "Failed to get camera info from camera" << std::endl;
+//        //return false;
+//    }
+//    std::cout << camInfo.vendorName << " "
+//              << camInfo.modelName << " "
+//              << camInfo.serialNumber << std::endl;
+
+//    error = camera.StartCapture();
+//    if ( error == PGRERROR_ISOCH_BANDWIDTH_EXCEEDED )
+//    {
+//        std::cout << "Bandwidth exceeded" << std::endl;
+//        return false;
+//    }
+//    else if ( error != PGRERROR_OK )
+//    {
+//        std::cout << "Failed to start image capture" << std::endl;
+//        return false;
+//    }
+//    return true;
+    return false;
 }
 
 void frameGetter::msleep(int ms)
@@ -94,7 +157,6 @@ void frameGetter::msleep(int ms)
     Sleep(ms);
 #endif
 }
-
 
 QImage frameGetter::convertFrame(cv::Mat frame)
 {
