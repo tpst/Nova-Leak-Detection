@@ -23,6 +23,8 @@ public:
     ~MainWindow();
 
 private slots:
+    void updateStatusBar(QString txt);
+
     void updateDisplay(QImage frame);
 
     void updateDisplay2(QImage frame);

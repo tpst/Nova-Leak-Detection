@@ -23,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(playNewStream()), handler, SLOT(playStream()));
     connect(this, SIGNAL(endStreams()), handler, SLOT(endStreams()));
     connect(cvCfg, SIGNAL(applySettings(variables)), handler, SIGNAL(applySettings(variables)));
+
+    connect(handler, SIGNAL(updateStatus(QString)), this, SLOT(updateStatusBar(QString)));
+
 }
 
 MainWindow::~MainWindow()
@@ -31,10 +34,16 @@ MainWindow::~MainWindow()
 
 }
 
+void MainWindow::updateStatusBar(QString txt)
+{
+    ui->statusBar->showMessage(txt);
+}
+
 void MainWindow::on_AddStream_clicked()
 {
     if(cfg.validStream()) // check that both streams are toggled on, IP's are valid
     {
+        ui->statusBar->showMessage("Opening streams...");
         cfg.getIPs(handler->IP1, handler->IP2);
 
         handler->toggleStream1(cfg.isButton2Checked()); // stream 1 is blackfly, thus swap toggle
@@ -71,7 +80,7 @@ void MainWindow::on_stopButton_clicked()
     //handler->Stop();
     emit endStreams();
 
-    cvCfg->disconnect();
+   // cvCfg->disconnect();
 
     this->refreshDisplays();
 }

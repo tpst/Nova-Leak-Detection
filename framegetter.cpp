@@ -3,103 +3,164 @@
 #include "framegetter.h"
 #include "streamconnector.h"
 #include "iostream"
+#include <memory>
 
 #include <QThread>
 
 using namespace cv;
 // using namespace FlyCapture2;
 
-/* frameGetter::frameGetter()
-{
-	// connect to FlyCam using their stupid SDK
-	cv = false;
-
-}*/
-
-frameGetter::frameGetter(bool ip)
+// framegetter class will open FlyCapture camera by default, unless CV flag is toggled and connect to an IP
+frameGetter::frameGetter(bool ip = false)
 {
     cv = ip;
-	// streaming = newConnection(vc, IP); this is called from capturehandler
-    //streaming = true;
+    vc = new VideoCapture();
+    //std::shared_ptr<VideoCapture> myPtr;
+
 }
 
 frameGetter::~frameGetter() 
 {
-    streaming = false;
 }
 
 int frameGetter::newConnection(QString IP)
 {
+
+    std::cout << "newConnection: " << QThread::currentThreadId() << std::endl;
     try {
-        QThread* thread = new QThread;
-        streamConnector* c = new streamConnector(vc, IP);
+        if(!vc->isOpened())
+        {
+            vc = new VideoCapture();
 
-        c->moveToThread(thread);
+            std::cout << "Opening ";
+            std::cout << IP.toStdString() << std::endl;
 
-        connect(thread, SIGNAL(started()), c, SLOT(process()));
-        //connect(c, SIGNAL(finished()), thread, SLOT(quit()));
-        //connect(c, SIGNAL(finished()), c, SLOT(deleteLater()));
-        connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-        qDebug() << "attempting to connect";
-        thread->start();
-        thread->wait(5000); // wait some time for connection to establish.
+            if(IP == "http://.../mjpg/video.mjpg") {
+                vc->open(0); // open default webcam
+            } else {
+                vc->open(IP.toStdString());
+            }
+
+        } else {
+            std::cout << "Already open" << std::endl;
+        }
+        if(vc->isOpened()) {
+//            Mat frame;
+//            vc->read(frame);
+//            imshow("frame", frame);
+//            waitKey(0);
+            streaming = true;
+            return true;
+        } else {
+            return false;
+        }
     } catch(std::exception &e) {
-        std::cout << "Error connecting: " << e.what() << std::endl;
-    }
-
-    if(vc.isOpened()) {
-        return true;
-    } else {
+        qDebug() << "Stream could not connect. Returned error: " << e.what();
         return false;
     }
 }
 
-void frameGetter::process() 
+void frameGetter::process()
 {
-    std::cout << "entered framegetter process" << std::endl;
-
-    streaming = true;
-	// while on - capture images.
+    std::cout << "get process: " << QThread::currentThreadId() << std::endl;
+    std::cout << "capture object: " << &vc << std::endl;
     try {
-        while(streaming)
-        {
-            //std::cout << "streaming" << std::endl;
+         while(streaming) {
             this->msleep(20);
             if(cv) {
-                // capture from IP camera using openCV
-                if(vc.isOpened()) {
-                    if(!vc.read(frame)) {
-                        std::cout << "Could not get an image from IP camera" << std::endl;
+                Mat frame;
+                if(vc->isOpened()) {
+                    if(!vc->read(frame)) {
+                        std::cout << "Could not get image from camera" << std::endl;
                     } else {
-                        //imshow("frame", frame);
-                        //waitKey(5);
-                        //emit procFrame(frame); // process this image
+                        // emit procFrame(frame);
                         qFrame = convertFrame(frame);
                         emit frameReady(qFrame);
-                        //this->msleep(5);
                     }
                 } else {
                     streaming = false;
-                    qDebug() << "streaming off because capture not open";
+                    std::cout << "framegetter capture not open" << std::endl;
                 }
-
             } else {
-                // Stupid stupid flycam
-
+                // stupid flycam
             }
+         }
 
-
-        }
-        destroyAllWindows();
-        if(vc.isOpened()) {
-            //vc.release();
-        }
     } catch(std::exception &e) {
-        std::cout << "Error capturing an image" << std::endl;
+        std::cout << "Error capturing image: " << e.what() << std::endl;
     }
 
-    //emit finished();
+    emit finished();
+    //vc->release();
+    delete vc;
 }
+
+
+//    try {
+//        QThread* thread = new QThread;
+//        streamConnector* c = new streamConnector(vc, IP);
+
+//        c->moveToThread(thread);
+
+//        connect(thread, SIGNAL(started()), c, SLOT(process()));
+//        connect(c, SIGNAL(finished()), thread, SLOT(quit()));
+//        connect(c, SIGNAL(finished()), c, SLOT(deleteLater()));
+//        connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+//        qDebug() << "attempting to connect";
+//        thread->start();
+//        thread->wait(1000); // wait some time for connection to establish.
+//    } catch(std::exception &e) {
+//        std::cout << "Error connecting: " << e.what() << std::endl;
+//    }
+//    std::cout << "capture: " << vc.isOpened() << std::endl;
+
+
+//void frameGetter::process()
+//{
+//    std::cout << "entered framegetter process" << std::endl;
+
+//    streaming = true;
+//	// while on - capture images.
+//    try {
+//        while(streaming)
+//        {
+//            //std::cout << "streaming" << std::endl;
+//            this->msleep(20);
+//            if(cv) {
+//                // capture from IP camera using openCV
+//                if(vc.isOpened()) {
+//                    if(!vc.read(frame)) {
+//                        std::cout << "Could not get an image from IP camera" << std::endl;
+//                    } else {
+//                        //imshow("frame", frame);
+//                        //waitKey(5);
+//                        //emit procFrame(frame); // process this image
+//                        qFrame = convertFrame(frame);
+//                        emit frameReady(qFrame);
+//                        //this->msleep(5);
+//                    }
+//                } else {
+//                    streaming = false;
+//                    qDebug() << "streaming off because capture not open";
+//                }
+
+//            } else {
+//                // Stupid stupid flycam
+
+//            }
+
+
+//        }
+//        destroyAllWindows();
+//        if(vc.isOpened()) {
+//            //vc.release();
+//        }
+//    } catch(std::exception &e) {
+//        std::cout << "Error capturing an image" << std::endl;
+//    }
+
+//    //emit finished();
+//}
 
 void frameGetter::endStream()
 {

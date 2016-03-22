@@ -6,7 +6,7 @@
 
 #include <windows.h>
 #endif
-
+#include <memory>
 #include <QObject>
 #include <QDebug>
 #include <QImage>
@@ -39,17 +39,17 @@ signals:
     void frameReady(QImage frame);
     void procFrame(cv::Mat frame);
     void refreshDisplays();
-    void error(QString err);
 
 private:
     //variables
     bool cv; // controls whether process uses opencv or flycam
     bool streaming;
     //FlyCapture2::Camera *camera;
-    cv::VideoCapture vc;
+    cv::VideoCapture *vc;
+    //std::unique_ptr<vc::VideoCapture> vc;
 
     QImage qFrame;
-    cv::Mat frame, RGBframe;
+    cv::Mat RGBframe;
 };
 
 #endif // FRAMEGETTER_H

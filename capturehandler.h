@@ -113,6 +113,7 @@ signals:
     void startStream();
     void refreshDisplays();
     void applySettings(variables v);
+    void updateStatus(QString txt);
 
 };
 

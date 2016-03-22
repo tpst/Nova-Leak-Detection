@@ -59,6 +59,7 @@ void configDialog::getIPs(QString& one, QString& two)
     two += ui->lineEdit_2->text();
 
     str = "/mjpg/video.mjpg";
+    //str = "/axis-cgi/mjpg/video.cgi";
     one += str;
     two += str;
 
@@ -66,9 +67,8 @@ void configDialog::getIPs(QString& one, QString& two)
 
 void configDialog::on_buttonBox_accepted()
 {
+
 }
-
-
 
 void configDialog::on_radioButton_3_toggled(bool checked)
 {
